@@ -28,6 +28,7 @@ public class ContaTriangoli {
 		JavaSparkContext jsc = new JavaSparkContext(sc);
 
 		// ******INIZIO******
+		
 		JavaRDD<String> dGrafo1 = jsc.textFile("data/gowallaconvirgole.txt");
 //		JavaRDD<String> dGrafo = jsc.textFile("data/p2p-Gnutella04.txt");
 //		JavaRDD<String> dGrafo = jsc.textFile("data/grafo8nodi.txt");
@@ -134,6 +135,7 @@ public class ContaTriangoli {
 		scan.next();
 
 
+		// **FINE**
 	}
 
 }
