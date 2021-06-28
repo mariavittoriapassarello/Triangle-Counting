@@ -2,6 +2,7 @@ package gebd.progetto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -22,35 +23,22 @@ public class ContaTriangoli {
 		Logger.getLogger("org").setLevel(Level.ERROR);
 		Logger.getLogger("akka").setLevel(Level.ERROR);
 		SparkConf sc = new SparkConf();
-		sc.setAppName("Triangle counting");
+		sc.setAppName("Conta Triangoli");
 		sc.setMaster("local[*]");
 		JavaSparkContext jsc = new JavaSparkContext(sc);
 
-//		SparkSession spark = SparkSession.builder().appName("Triangle counting").config(jsc.getConf())
-//				.getOrCreate();
-
 		// ******INIZIO******
-		JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla_edges.txt");
+		JavaRDD<String> dGrafo1 = jsc.textFile("data/gowallaconvirgole.txt");
 //		JavaRDD<String> dGrafo = jsc.textFile("data/p2p-Gnutella04.txt");
 //		JavaRDD<String> dGrafo = jsc.textFile("data/grafo8nodi.txt");
 
-		// usare questo pezzo di codice se i vertici di ogni arco sono separati da spazio(file Gowalla_edges.txt)
-		JavaRDD<ArcoGradi> dPreparaGrafo = dGrafo.map(b -> new ArcoGradi((b.split("	")[0]), b.split("	")[1]));
-		List<ArcoGradi> A = dPreparaGrafo.collect();
-		List<String> Grafo1 = new ArrayList<String>();
-		for (ArcoGradi a : A) {
-			Grafo1.add(a.getIdEntrata() + "," + a.getIdUscita());
-		}
-		JavaRDD<String> dGrafo1 = jsc.parallelize(Grafo1);
-
-        //usare questo pezzo di codice se i vertici di ogni arco sono separati da virgola
+        //usare questo pezzo di codice se i vertici di ogni arco sono separati da virgola per passare da un grafo indiretto ad un grafo diretto
 //		JavaRDD<String> dGrafo1 = dGrafo.map(x -> new String(x.split(",")[1] + "," + x.split(",")[0])).union(dGrafo);
 
-		//Lavoriamo sul grafo...
-
+		// **PREPARAZIONE DEL GRAFO**
 		//creo coppia kv con chiave ogni vertice e valore con numero 1
 		JavaPairRDD<String, Integer> dGrado_0 = dGrafo1
-				.mapToPair(x -> new Tuple2<String, Integer>(x.replaceAll("()", "").split(",")[0], 1));
+				.mapToPair(x -> new Tuple2<String, Integer>(x.split(",")[0], 1));
 
 		//creo coppia kv con chiave vertice e valore grado
 		JavaPairRDD<String, Integer> dGrado_1 = dGrado_0.reduceByKey((x, y) -> x + y);
@@ -67,39 +55,23 @@ public class ContaTriangoli {
 		JavaPairRDD<String, String> dChiaveArco1 = dGrafo1
 				.mapToPair(x -> new Tuple2<String, String>(x.split(",")[1], x));
 
-		//il primo join completo contiene in chiave l' arco e in valore il grado del vertice in entrata
+		//in output ottengo una coppia che contiene in chiave l' arco e in valore il grado del vertice in entrata
 		JavaPairRDD<String, String> dArcoG0 = dChiaveArco0.join(dGrado_2)
 				.mapToPair(w -> new Tuple2<String, String>(w._2._1, w._2._2));
-		//il primo join completo contiene in chiave l' arco e in valore il grado del vertice in uscita
+		//in output ottengo una coppia che contiene in chiave l' arco e in valore il grado del vertice in uscita
 		JavaPairRDD<String, String> dArcoG1 = dChiaveArco1.join(dGrado_2)
 				.mapToPair(w -> new Tuple2<String, String>(w._2._1, w._2._2));
 
-		//uniamo i due output
+		//interseco per chiave i due output
 		JavaPairRDD<String, Tuple2<String, String>> dArcoGradi_0 = dArcoG0.join(dArcoG1);
 
 		JavaRDD<String> dArcoGradi_1 = dArcoGradi_0.map(x -> new String(x._1 + "," + x._2._1 + "," + x._2._2));
-
+		
 		// **MAP1**
-
-		JavaRDD<ArcoGradi> dMap1_0 = dArcoGradi_1
-				.map(b -> new ArcoGradi((b.split(",")[0]), b.split(",")[1], b.split(",")[2], b.split(",")[3]));
-
-		List<ArcoGradi> a = dMap1_0.collect();
-		List<String> Map1_1 = new ArrayList<String>();
-
-		//ottengo l' output di map1 selezionando solo gli archi tali che vertice entrata "<" vertice uscita
-		for (ArcoGradi i : a) {
-			if (Integer.parseInt(i.getDegreeEntrata()) < Integer.parseInt(i.getDegreeUscita())) {
-				Map1_1.add(i.getIdEntrata() + "," + i.getIdUscita());
-			}
-			if (Integer.parseInt(i.getDegreeEntrata()) == Integer.parseInt(i.getDegreeUscita())
-					&& Integer.parseInt(i.getIdEntrata()) < Integer.parseInt(i.getIdUscita())) {
-				Map1_1.add(i.getIdEntrata() + "," + i.getIdUscita());
-			}
-
-		}
-		JavaRDD<String> dMap1_1 = jsc.parallelize(Map1_1);
-
+		JavaRDD<String> prova0 = dArcoGradi_1.filter(x-> Integer.parseInt(x.split(",")[2]) < Integer.parseInt(x.split(",")[3]));
+		JavaRDD<String> prova1 = dArcoGradi_1.filter(x-> Integer.parseInt(x.split(",")[2]) == Integer.parseInt(x.split(",")[3])).filter(x-> Integer.parseInt(x.split(",")[0]) < Integer.parseInt(x.split(",")[1]));
+		JavaRDD<String> dMap1_1 = prova0.union(prova1);
+		
 		// **PREPARAZIONE AL REDUCE 1**
 
 		//creo coppia kv con chiave vertice in entrata e relativo grado e valore tutti i vertici vicini con accanto relativi grado
@@ -156,7 +128,11 @@ public class ContaTriangoli {
 
 		System.out.println(numeroTriangoli);
 
-		// GRAPHFRAME
+     	Scanner scan;
+		System.out.println("Premi invio per concludere l'esecuzione");
+		scan = new Scanner(System.in);
+		scan.next();
+
 
 	}
 
