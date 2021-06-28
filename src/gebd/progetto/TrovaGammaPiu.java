@@ -14,7 +14,7 @@ import scala.Tuple2;
  * data in input una stringa nella forma p1,p2,p3,p4 restituisce tutte le
  * possibili coppie pi,pj dove i !=j senza ripetizione con valore 1
  */
-public class TrovaGammaPiuGradi implements PairFunction<String, String, ArrayList<String>> {
+public class TrovaGammaPiu implements PairFunction<String, String, ArrayList<String>> {
 
 	
 

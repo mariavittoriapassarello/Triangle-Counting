@@ -3,26 +3,26 @@ package gebd.progetto;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Arco implements Serializable{
+public class ArcoGradi implements Serializable{
 
 	
-	public Arco() {
+	public ArcoGradi() {
 		
 	}
 	
-	public Arco(String idEntrata, String idUscita, String degreeEntrata, String degreeUscita) {
+	public ArcoGradi(String idEntrata, String idUscita, String degreeEntrata, String degreeUscita) {
 		super();
 		this.idEntrata = idEntrata;
 		this.idUscita = idUscita;
 		this.degreeEntrata = degreeEntrata;
 		this.degreeUscita = degreeUscita;
 	}
-	public Arco(String idEntrata, String idUscita) {
+	public ArcoGradi(String idEntrata, String idUscita) {
 		super();
 		this.idEntrata = idEntrata;
 		this.idUscita = idUscita;
 	}
-	public Arco(String id, ArrayList<String> infoGammaPiu) {
+	public ArcoGradi(String id, ArrayList<String> infoGammaPiu) {
 		super();
 		this.id = id;
 		this. infoGammaPiu = infoGammaPiu;
