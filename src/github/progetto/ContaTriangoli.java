@@ -24,31 +24,27 @@ public class ContaTriangoli {
 				
 		//// ****INIZIO****
 
-		JavaRDD<String> dGrafo1 = jsc.textFile("data/Gowalla.txt");
+		JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla.txt");
 		
 		// **PREPARAZIONE DEL GRAFO**
 		
-		JavaPairRDD<String, Integer> dGrado_0 = dGrafo1.mapToPair(x -> new Tuple2<String, Integer>(x.split(",")[0], 1));
+		JavaPairRDD<String, String> dGrado = dGrafo.mapToPair(x -> new Tuple2<String, Integer>(x.split(",")[0], 1)).reduceByKey((x, y) -> x + y).mapToPair(z -> new Tuple2<String, String>(z._1.split(",")[0], Integer.toString(z._2)));
 
-		JavaPairRDD<String, String> dGrado_1 = dGrado_0.reduceByKey((x, y) -> x + y).mapToPair(z -> new Tuple2<String, String>(z._1.split(",")[0], Integer.toString(z._2)));
+		JavaPairRDD<String, String> dChiaveArco0 = dGrafo.mapToPair(x -> new Tuple2<String, String>(x.split(",")[0], x));
 
-		JavaPairRDD<String, String> dChiaveArco0 = dGrafo1.mapToPair(x -> new Tuple2<String, String>(x.split(",")[0], x));
+		JavaPairRDD<String, String> dChiaveArco1 = dGrafo.mapToPair(x -> new Tuple2<String, String>(x.split(",")[1], x));
 
-		JavaPairRDD<String, String> dChiaveArco1 = dGrafo1.mapToPair(x -> new Tuple2<String, String>(x.split(",")[1], x));
+		JavaPairRDD<String, String> dArcoG0 = dChiaveArco0.join(dGrado).mapToPair(x -> new Tuple2<String, String>(x._2._1, x._2._2));
 
-		JavaPairRDD<String, String> dArcoG0 = dChiaveArco0.join(dGrado_1).mapToPair(x -> new Tuple2<String, String>(x._2._1, x._2._2));
+		JavaPairRDD<String, String> dArcoG1 = dChiaveArco1.join(dGrado).mapToPair(w -> new Tuple2<String, String>(w._2._1, w._2._2));
 
-		JavaPairRDD<String, String> dArcoG1 = dChiaveArco1.join(dGrado_1).mapToPair(w -> new Tuple2<String, String>(w._2._1, w._2._2));
-
-		JavaPairRDD<String, Tuple2<String, String>> dArcoGradi_0 = dArcoG0.join(dArcoG1);
-
-		JavaRDD<String> dArcoGradi_1 = dArcoGradi_0.map(x -> new String(x._1 + "," + x._2._1 + "," + x._2._2));
+		JavaRDD<String> dArcoGradi = dArcoG0.join(dArcoG1).map(x -> new String(x._1 + "," + x._2._1 + "," + x._2._2));
 
 		// **MAP1**
 		
-		JavaRDD<String> dMap1_0 = dArcoGradi_1.filter(x -> Integer.parseInt(x.split(",")[2]) < Integer.parseInt(x.split(",")[3]));
+		JavaRDD<String> dMap1_0 = dArcoGradi.filter(x -> Integer.parseInt(x.split(",")[2]) < Integer.parseInt(x.split(",")[3]));
 		
-		JavaRDD<String> dMap1_1 = dArcoGradi_1.filter(x -> Integer.parseInt(x.split(",")[2]) == Integer.parseInt(x.split(",")[3])).filter(x -> Integer.parseInt(x.split(",")[0]) < Integer.parseInt(x.split(",")[1]));
+		JavaRDD<String> dMap1_1 = dArcoGradi.filter(x -> Integer.parseInt(x.split(",")[2]) == Integer.parseInt(x.split(",")[3])).filter(x -> Integer.parseInt(x.split(",")[0]) < Integer.parseInt(x.split(",")[1]));
 		
 		JavaRDD<String> dMap1_2 = dMap1_0.union(dMap1_1);
 
@@ -96,9 +92,9 @@ public class ContaTriangoli {
 	    		
 		int nodoProva = 147;
 
-		JavaPairRDD<String, String> dVerifica0 = dGrafo1.mapToPair(x -> new Tuple2<String, String>(x.split(",")[0], x.split(",")[1])).reduceByKey((x, y) -> x + "," + y).filter(x -> Integer.parseInt(x._1) == nodoProva);
+		JavaPairRDD<String, String> dVerifica0 = dGrafo.mapToPair(x -> new Tuple2<String, String>(x.split(",")[0], x.split(",")[1])).reduceByKey((x, y) -> x + "," + y).filter(x -> Integer.parseInt(x._1) == nodoProva);
 		
-		JavaPairRDD<String, String> dVerifica1 = dGrado_1.filter(x -> Integer.parseInt(x._1) == nodoProva);
+		JavaPairRDD<String, String> dVerifica1 = dGrado.filter(x -> Integer.parseInt(x._1) == nodoProva);
 		
 		System.out.println(dVerifica0.collect());
 		
@@ -112,15 +108,15 @@ public class ContaTriangoli {
 		
 		System.out.println(dVerifica2.collect());
 		
-		//match (u:nodo)-[:Vicino]-(v:nodo) where u.id = 147 match (u:nodo)-[:Vicino]-(v:nodo) where u.grado < v.grado or (u.grado = v.grado and u.id < v.id) return u,v
+		//match (u:nodo)-[:vicino]-(v:nodo) where u.id = 147 match (u:nodo)-[:vicino]-(v:nodo) where u.grado < v.grado or (u.grado = v.grado and u.id < v.id) return u,v
 
 		JavaPairRDD<String, String> dVerifica3 = dReduce3_0.filter(x -> Integer.parseInt(x._1) == nodoProva);
 		
 		System.out.println(dVerifica3.collect());
 		
-		//match (v:nodo)-[:Vicino]-(u:nodo)-[:Vicino]-(w:nodo) where u.id = 147 match (v:nodo)-[:Vicino]-(w:nodo) return u,v,w
+		//match (v:nodo)-[:vicino]-(u:nodo)-[:vicino]-(w:nodo) where u.id = 147 match (v:nodo)-[:vicino]-(w:nodo) return u,v,w
 
-		//match (v:nodo)-[:Vicino]-(u:nodo)-[:Vicino]-(w:nodo) where u.id = 147 match (w:nodo)-[:Vicino]-(v:nodo) where (u.grado < v.grado or (u.grado = v.grado and u.id < v.id)) and ( u.grado < w.grado or (u.grado = w.grado and u.id < w.id)) return u,v,w
+		//match (v:nodo)-[:vicino]-(u:nodo)-[:vicino]-(w:nodo) where u.id = 147 match (w:nodo)-[:vicino]-(v:nodo) where (u.grado < v.grado or (u.grado = v.grado and u.id < v.id)) and ( u.grado < w.grado or (u.grado = w.grado and u.id < w.id)) return u,v,w
 		
 	}
 
