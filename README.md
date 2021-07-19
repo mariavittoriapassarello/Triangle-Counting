@@ -39,7 +39,7 @@ JavaRDD<String> dNodi = dGrafo.map(x -> new String(x.split(",")[0],1)).reduceByK
 dNodi.saveAsTextFile("GowallaNodi");
 ```
 
-Dal momento che Neo4j è in grado di tralasciare la distinzione tra grafi diretti e indiretti nel momento dell'interrogazione mediante query, per ottimizzare i tempi abbiamo modificato il file scaricato dal sito in modo da rendere il grafo indiretto; per fare ciò abbiamo utilizzato la classe Wrapper "Arco".
+Dal momento che il grafo è concepito per essere indiretto, con il seguente codice, facendo uso della classe wrapper, abbiamo ottenuto la lista di archi tali da rendere il grafo indiretto,
 ```
 JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla.txt");	
 JavaRDD<Arco> dArco = dGrafo.map(x -> new Arco(x.split(",")[0],x.split(",")[1]));
