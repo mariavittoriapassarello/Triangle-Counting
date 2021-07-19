@@ -23,23 +23,23 @@ Il grafo di riferimento è concepito come indiretto, e ha 196591 nodi, 950327 ar
 
 Per una maggiore leggibilità del grafo, con il seguente codice abbiamo posto come elemento separatore dei due nodi la virgola.
 
---
+```
 JavaRDD<String> gowalla = jsc.textFile("data/Gowalla_edges.txt");
 gowalla = gowalla.map(x->new String(x.split("	")[0]+ "," + x.split("	")[1]));
 gowalla.saveAsTextFile("Gowalla");
---
+```
 
 
 Per la creazione del grafo su Neo4j si richiede un file contenente la lista dei nodi del grafo. Per ottenerla, utilizziamo il seguente codice:
 
---
+```
 JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla.txt");	
 JavaRDD<String> dNodi = dGrafo.map(x -> new String(x.split(",")[0],1)).reduceByKey((x,y)->x+y).map(x -> new String(x._1 + "," + x._1));
 dNodi.saveAsTextFile("GowallaNodi");
---
+```
 
 Dal momento che Neo4j è in grado di tralasciare la distinzione tra grafi diretti e indiretti nel momento dell'interrogazione mediante query, per ottimizzare i tempi abbiamo modificato il file scaricato dal sito in modo da rendere il grafo indiretto; per fare ciò abbiamo utilizzato la classe Wrapper "Arco".
---
+```
 JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla.txt");	
 JavaRDD<Arco> dArco = dGrafo.map(x -> new Arco(x.split(",")[0],x.split(",")[1]));
 List<Arco> A = dArco.collect();
@@ -50,7 +50,7 @@ List<String> Grafo = new ArrayList<String>();
  }
 JavaRDD<String> dGrafo1 = jsc.parallelize(Grafo);
 dGrafo1.saveAsTextFile("GowallaArchi");
---
+```
 Una volta ottenuti i file GowallaNodi.txt e GowallaArchi.txt, li abbiamo trasformati in file .csv e utilizzando la libreria **apoc** di Neo4j li abbiamo caricati sul software.
 
 
