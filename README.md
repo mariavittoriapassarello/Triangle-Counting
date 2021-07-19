@@ -1,7 +1,7 @@
 # Triangle-Counting
 
 ## La strategia dell'algoritmo
-Otteniamo &Gamma;<sup>+</sup>(u) &forall; u &isin; U, ovvero l'insieme di tutti i v &isin; &Gamma;(u) tali che: d(v) > d(u), tra questi si selezionano poi gli insiemi tali per cui:  
+Otteniamo &Gamma;<sup>+</sup>(u) &forall; u &isin; U, ovvero l'insieme di tutti i v &isin; &Gamma;(u) tali che: u &pr; v, tra questi si selezionano poi gli insiemi tali per cui:  
 |&Gamma;<sup>+</sup>(u)| &ge; k-1. Ottenuto questo, attraverso passaggi logici, ricaviamo G<sup>&#43;</sup>(u), ovvero il sottografo indotto da &Gamma;<sup>&#43;</sup>(u), e poi contiamo le k-1 cliques in G<sup>+</sup>(u).
 ***
 
