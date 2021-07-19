@@ -13,7 +13,7 @@ Otteniamo l'insieme gamma + di u, che contiene l'insieme dei vicini di u che han
 
 ## Il dataset  
 Dove trovarlo: https://snap.stanford.edu/data/loc-Gowalla.html
-Il grafo di riferimento è indiretto, e ha 196591 nodi, 950327 archi e 2273138 triangoli. Il file che scarichiamo contiene però il grafo trasformato indiretto, quindi possiede 1900654 archi, e i nodi di ogni arco sono separati da uno spazio. 
+Il grafo di riferimento è concepito come indiretto, e ha 196591 nodi, 950327 archi e 2273138 triangoli. Il file che scarichiamo contiene però il grafo diretto, quindi possiede 1900654 archi, e i nodi di ogni arco sono separati da uno spazio. 
 
 
 
