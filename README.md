@@ -1,7 +1,7 @@
 # Triangle-Counting
 
 ## La strategia dell'algoritmo
-Otteniamo l'insieme <img src="https://render.githubusercontent.com/render/math?math=\Gamma^{+}(u)">  Γ+(u) che contiene l'insieme dei vicini di u che hanno grado maggiore di u, con la condizione che la cardinalità di gamma + di u sia maggiore o uguale a k-1. Ottenuto questo, attraverso passaggi logici, ricaviamo g + u, ovvero il sottografo indotto da questo insieme di vertici, e poi contiamo le k-1 cliques in g+ u.
+Otteniamo &Gamma;<sup>&#43;</sup>(u) &forall; u &#8712; U, ovvero l'insieme formato tutti i v &#8712; &Gamma;(u) tali che: d(v) > d(u), tra questi si selezionano poi gli insiemi tali per cui:&ensp; |&Gamma;<sup>&#43;</sup>(u)| &#8805; k-1. Ottenuto questo, attraverso passaggi logici, ricaviamo G<sup>&#43;</sup>(u), ovvero il sottografo indotto da &Gamma;<sup>&#43;</sup>(u), e poi contiamo le k-1 cliques in G<sup>&#43;</sup>(u).
 ***
 
 
