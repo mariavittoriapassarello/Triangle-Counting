@@ -1,5 +1,13 @@
 # Triangle-Counting
 
+## Introduzione
+Lo scopo di questo progetto è di formulare un algoritmo che dato un grafo restituisce il numero q3 di 3-cliques esistenti al suo interno. Facciamo riferimento all'articolo "Clique Counting in Map Reduce: algorithms and experiments" scritto da Irene Finocchi, Marco Finocchi e Emanuele G. Fusco, limitatamente rispetto al caso k=3 , e implementiamo secondo il paradigma *Map-Reduce* lo pseudocodice dell'algoritmo. Gli strumenti che utilizziamo sono Java su Eclipse e Spark per scrivere il codice e il software Neo4j per visualizzare graficamente il corretto funzionamento di quest'ultimo. 
+
+## Notazione utilizzata e teoria dei grafi 
+Dato un grafo indiretto G=(V,E) dove V corrisponde all'insieme dei vertici ed E all'insieme archi, una k-clique è un sottoinsieme di V di cardinalità k tale che per ogni coppia u,v appartenente all'insieme dei k vertici, questa è collegata da un arco. Più formalmente, una k-clique è un insieme di vertici tale che il sottografo indotto da questi è completo, dove un sottografo indotto è un sottografo G'=(V',E') di G se per ogni u,v appartenente a V' per cui vale che (u,v) appartiene a E allora (u,v) appartiene a E'. 
+Si introduce una relazione di ordinamento tra i vertici del grafo definita come segue: u<v se e solo se d(u)<d(v) oppure d(u)=d(v) e u<v, dove d(u) corrisponde alla cardinalità di Gamma(u), ovvero l'insieme dei vertici collegati tramite un arco ad u. L'algoritmo utilizza questo ordinamento per determinare il nodo di riferimento per il conteggio di ciascuna clique.
+
+
 ## La strategia dell'algoritmo
 Otteniamo &Gamma;<sup>+</sup>(u) &forall; u &isin; U, ovvero l'insieme di tutti i v &isin; &Gamma;(u) tali che: u &pr; v, tra questi si selezionano poi gli insiemi tali per cui:  
 |&Gamma;<sup>+</sup>(u)| &ge; k-1. Ottenuto questo, attraverso passaggi logici, ricaviamo G<sup>&#43;</sup>(u), ovvero il sottografo indotto da &Gamma;<sup>&#43;</sup>(u), e poi contiamo le k-1 cliques in G<sup>+</sup>(u).
@@ -65,15 +73,15 @@ Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'inpu
 
 1. Preparazione dell'input con Spark
 Dopo aver caricato il file Gowalla.txt sull'applicazione ContaTriangoli.java, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {((u,v); d(u), d(v)}. 
-Per fare ciò, abbiamo eseguito i seguenti passaggi: 
-**CALCOLO DI (NODO; GRADO)**: al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero "1"; successivamente, mediante una reduceByKey, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. (u; d(u))
+Per fare ciò, abbiamo eseguito i seguenti passaggi:   
+**CALCOLO DI (NODO; GRADO)**: al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero "1"; successivamente, mediante una reduceByKey, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. (u; d(u))  
 **CALCOLO DI (ARCO; GRADI DEI DUE NODI)**: Abbiamo poi creato due liste differenti in cui entrambe hanno come chiave l'arco, e come valore rispettivamente il grado del nodo in entrata e il grado del nodo in uscita. Con un join, intersecando per chiave le due liste, abbiamo ottenuto una lista in cui in chiave si trova l'arco, e in valore i gradi dei relativi nodi. Sempre per comodità, abbiamo poi convertito questo oggetto in una lista di stringhe. 
 
 
 
 
-2. Preparazione dell'input con Neo4j
-**CALCOLO DI (NODO; GRADO)**: dopo aver creato il grafo su Neo4j, abbiamo eseguito una query per assegnare come attributo ad ogni nodo del grafo il relativo grado. Questa operazione  è stata ottimizzata utilizzando il comando node.degree() della libreria apoc. 
+2. Preparazione dell'input con Neo4j  
+**CALCOLO DI (NODO; GRADO)**: dopo aver creato il grafo su Neo4j, abbiamo eseguito una query per assegnare come attributo ad ogni nodo del grafo il relativo grado. Questa operazione  è stata ottimizzata utilizzando il comando node.degree() della libreria apoc.  
 **CALCOLO DI (ARCO; GRADI DEI DUE NODI)**: per esportare la lista in cui il generico elemento è del tipo {((u,v); d(u), d(v)}, abbiamo dato come argomento del comando export.csv.query() della libreria apoc la query che permette di ottenere questo oggetto. Il file ArcoGradi.csv risultante sarà l'input del codice contenuto nel file ContaTriangoli_NeoSpark.java.
 (per permetterne il caricamento su GitHub è stato suddiviso nei due file ArcoGradi_pt1.txt e ArcoGradi_pt2.txt).
 
