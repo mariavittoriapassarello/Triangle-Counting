@@ -53,15 +53,7 @@ Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'inpu
 
 1. Preparazione dell'input con *Spark*:  
 Dopo aver caricato il file `Gowalla.txt` sull'applicazione `ContaTriangoli.java`, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {((u,v); d(u), d(v)}. 
-Per fare ciò, abbiamo eseguito i seguenti passaggi:  
-| Parameter        | Description           |
-|:------------- |:------------- |
-| `task` | The task to perform. The value can be *compression* (default) or *benchmark* (see Section Benchmarking). |
-| `input` | The genomic input file. If `task=compression`, it should be a FASTA/FASTQ file and should be placed locally, instead of HDFS. |
-| `output` | The output file. If `task=compression`, the name should end with the suffix ".uc" |
-| `uc.codec` | The name of the codec to use in order to compress e |  
-
-
+Per fare ciò, abbiamo eseguito i seguenti passaggi:   
 | Passi        | Descrizione           |
 |:------------- |:------------- |
 | `CALCOLO DI (NODO; GRADO)` | al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero **1**; successivamente, mediante una `reduceByKey`, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. |
