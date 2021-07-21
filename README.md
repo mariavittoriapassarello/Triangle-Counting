@@ -1,7 +1,7 @@
 # Triangle-Counting
 
 ## Introduzione
-Lo scopo di questo progetto è di formulare un algoritmo che, dato un grafo restituisce il numero q<sub>3</sub> di 3-cliques esistenti al suo interno. Facciamo riferimento all'articolo "*Clique Counting in Map Reduce: algorithms and experiments*", limitatamente al caso k=3 , e implementiamo secondo il paradigma *Map-Reduce* lo pseudocodice dell'algoritmo. Il codice è stato scritto con Java e Spark e viene utilizzato come strumento di supporto il database NoSQL Neo4J.
+Lo scopo di questo progetto è di formulare un algoritmo che, dato un grafo restituisce il numero q<sub>3</sub> di 3-cliques esistenti al suo interno. Facciamo riferimento all'articolo "*Clique Counting in Map Reduce: algorithms and experiments*", limitatamente al caso k=3 , e implementiamo secondo il paradigma *Map-Reduce* lo pseudocodice dell'algoritmo. Il codice è stato scritto con *Java* e *Spark* e viene utilizzato come strumento di supporto il database NoSQL *Neo4J*.
 
 ## Notazione utilizzata e teoria dei grafi 
 Dato un grafo indiretto G=(V,E) dove V corrisponde all'insieme dei vertici ed E all'insieme archi, una k-clique è un sottoinsieme C di V di cardinalità k tale ogni coppia u,v appartenente a C è collegata da un arco. Più formalmente, una k-clique è un insieme di vertici tale che il sottografo indotto da questi è completo, dove un sottografo indotto è un sottografo G'=(V',E') di G con V' &sube; V, E' &sube; E tale che &forall; u &isin; V', v &isin; V' per cui vale che (u,v) &isin; E allora si ha che (u,v) &isin; E'. 
@@ -45,14 +45,14 @@ List<String> Grafo = new ArrayList<String>();
 JavaRDD<String> dGrafo1 = jsc.parallelize(Grafo);
 dGrafo1.saveAsTextFile("GowallaArchi");
 ```
-Una volta ottenuti i file *GowallaNodi.txt* e *GowallaArchi.txt*, li abbiamo trasformati in file *.csv* e utilizzando la libreria *apoc* di Neo4j li abbiamo caricati sul software.
+Una volta ottenuti i file   `GowallaNodi.txt` e `GowallaArchi.txt`, li abbiamo trasformati in file `.csv` e utilizzando la libreria `apoc` di *Neo4j* li abbiamo caricati sul software.
 
 ## Due strade alternative 
 
-Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'input per l'algoritmo Clique Counting. La prima genera l'input direttamente con Spark, mentre nella seconda è Neo4j che svolge la parte iniziale di preparazione per l'input dell'applicazione. Successivamente, una volta terminata l'applicazione Spark, Neo4j è stato usato nuovamente come strumento per validare i risultati ottenuti.
+Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'input per l'algoritmo *Clique Counting*. La prima genera l'input direttamente con *Spark*, mentre nella seconda è *Neo4j* che svolge la parte iniziale di preparazione per l'input dell'applicazione. Successivamente, una volta terminata l'applicazione *Spark*, *Neo4j* è stato usato nuovamente come strumento per validare i risultati ottenuti.
 
-1. Preparazione dell'input con Spark:  
-Dopo aver caricato il file *Gowalla.txt* sull'applicazione *ContaTriangoli.java*, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {((u,v); d(u), d(v)}. 
+1. Preparazione dell'input con *Spark*:  
+Dopo aver caricato il file `Gowalla.txt` sull'applicazione `ContaTriangoli.java`, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {((u,v); d(u), d(v)}. 
 Per fare ciò, abbiamo eseguito i seguenti passaggi:   
 **CALCOLO DI (NODO; GRADO)**: al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero "1"; successivamente, mediante una reduceByKey, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. (u; d(u))  
 **CALCOLO DI (ARCO; GRADI DEI DUE NODI)**: Abbiamo poi creato due liste differenti in cui entrambe hanno come chiave l'arco, e come valore rispettivamente il grado del nodo in entrata e il grado del nodo in uscita. Con un join, intersecando per chiave le due liste, abbiamo ottenuto una lista in cui in chiave si trova l'arco, e in valore i gradi dei relativi nodi. Sempre per comodità, abbiamo poi convertito questo oggetto in una lista di stringhe. 
