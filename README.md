@@ -91,15 +91,42 @@ L'algoritmo è diviso in tre round MapReduce:
 **Round 1:**
 
 **Map1:** data in input la lista di stringhe contenente ogni arco con accanto i gradi dei relativi nodi, con un'operazione di `filter` abbiamo selezionato gli archi che hanno grado del nodo in entrata strettamente minore del grado del nodo in uscita e abbiamo salvato questo oggetto nella `JavaRDD` di stringhe `dMap1_0`.
-Successivamente, con una seconda operazione di `filter`, abbiamo selezionato gli archi che hanno grado del nodo in entrata uguale al grado del nodo in uscita e abbiamo eseguito un ulteriore `filter` che seleziona, di questi, solamente quelli che possiedono etichetta numerica del nodo in entrata inferiore a quella del nodo in uscita; abbiamo poi salvato questo oggetto nella `JavaRDD` di stringhe `dMap1_1`. Infine, abbiamo unito i due oggetti per ottenere tutti gli archi (u,v) tali che u &pr; v. Con lo scopo di ottenere &Gamma;<sup>+</sup>(u), abbiamo eseguito una `reduceByKey` sull'output precedente.
+Successivamente, con una seconda operazione di `filter`, abbiamo selezionato gli archi che hanno grado del nodo in entrata uguale al grado del nodo in uscita e abbiamo eseguito un ulteriore `filter` che seleziona, di questi, solamente quelli che possiedono etichetta numerica del nodo in entrata inferiore a quella del nodo in uscita; abbiamo poi salvato questo oggetto nella `JavaRDD` di stringhe `dMap1_1`. Infine, abbiamo unito i due oggetti per ottenere tutti gli archi (u,v) tali che u &pr; v. Con lo scopo di ottenere &Gamma;<sup>+</sup>(u), abbiamo eseguito una `reduceByKey` sull'output precedente: questo ci ha restituito la `JavaPairRDD`  `dGammaPiu`, in cui la generica coppia chiave-valore è del tipo (u; v<sub>1</sub>, d(v<sub>1</sub>), v<sub>2</sub>,d(v<sub>2</sub>),...); 
 
 
-**Reduce 1**:
+**Reduce 1**: abbiamo utilizzato l'interfaccia `Card.java` sull'output del passo precedente: questa conta all'interno del valore di ogni chiave il numero di termini separati da virgole; successivamente, divide questo numero per 2. In questo modo siamo riusciti ad ottenere la coppia `JavaPairRDD<String, Integer>` (u; |&Gamma;<sup>+</sup>(u)|). Poi, con un'operazione di `filter`, abbiamo selezionato solamente le coppie che avevano cardinalità maggiore o uguale a 2, e abbiamo salvato questo oggetto nella variabile `dReduce1_0`. Per ottenere l'output del **Reduce 1**, che abbiamo salvato nell'oggetto `dReduce1`,  abbiamo infine eseguito un `join` tra l'oggetto appena creato e `dGammaPiu`. Il risultato è stato convertito in una `JavaRDD` di stringhe e privato dell'informazione circa la cardinalità di &Gamma;<sup>+</sup>(u), quindi il generico elemento è del tipo (u, v<sub>1</sub>, d(v<sub>1</sub>), v<sub>2</sub>,d(v<sub>2</sub>),...) 
+
+
+**Map 2**: 
 
 
 
+JavaPairRDD<String, String> dMap2_0 = dMap1_2.mapToPair(x -> new Tuple2<String, String>(x.split(",")[0] + "," + x.split(",")[1], "$"));
+
+		JavaPairRDD<String, String> dMap2_1 = dReduce1_1.flatMapToPair(new Map2());
+  
+  
+  
+**Reduce 2**: 
+JavaPairRDD<String, String> dReduce2_0 = dMap2_1.reduceByKey((x, y) -> x + "," + y);
+
+JavaPairRDD<String, String> dReduce2_1 = dReduce2_0.join(dMap2_0).mapToPair(x -> new Tuple2<String, String>(x._1, x._2._1));
 
 
+**Map 3**:
+
+JavaPairRDD<String, String> dMap3_0 = dReduce2_1.flatMapToPair(new Map3());
+
+
+**Reduce 3**:
+
+JavaPairRDD<String, String> dReduce3_0 = dMap3_0.reduceByKey((x, y) -> x + "," + y);
+
+		JavaPairRDD<String, Integer> dReduce3_1 = dReduce3_0.mapToPair(new Card());
+
+		Integer numeroTriangoli = dReduce3_1.values().reduce((x, y) -> x + y);
+
+		System.out.println(numeroTriangoli);
 
 
 
