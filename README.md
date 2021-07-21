@@ -33,7 +33,7 @@ Nella cartella *Github* si trovano i seguenti file/classi:
 
 
 ## Indicazioni per l'uso
-Per una maggiore leggibilità del grafo, con il seguente codice abbiamo posto come elemento separatore dei due nodi la virgola.
+Per una maggiore leggibilità del grafo, con il seguente codice abbiamo posto come elemento separatore dei due nodi la virgola:
 
 ```
 JavaRDD<String> gowalla = jsc.textFile("data/Gowalla_edges.txt");
