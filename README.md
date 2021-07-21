@@ -59,7 +59,9 @@ Per fare ciò, abbiamo eseguito i seguenti passaggi:
 | `task` | The task to perform. The value can be *compression* (default) or *benchmark* (see Section Benchmarking). |
 | `input` | The genomic input file. If `task=compression`, it should be a FASTA/FASTQ file and should be placed locally, instead of HDFS. |
 | `output` | The output file. If `task=compression`, the name should end with the suffix ".uc" |
-| `uc.codec` | The name of the codec to use in order to compress e |
+| `uc.codec` | The name of the codec to use in order to compress e |  
+
+
 | Passi        | Descrizione           |
 |:------------- |:------------- |
 | `CALCOLO DI (NODO; GRADO)` | al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero **1**; successivamente, mediante una `reduceByKey`, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. |
