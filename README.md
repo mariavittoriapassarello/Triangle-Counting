@@ -56,9 +56,9 @@ Dopo aver caricato il file `Gowalla.txt` sull'applicazione `ContaTriangoli.java`
 Per fare ciò, abbiamo eseguito i seguenti passaggi:
 
 | Passi        | Descrizione           |
-|:------------- |:------------- |
+|:----------- |:------------- |
 | `CALCOLO DI (NODO; GRADO)` | al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero **1**; successivamente, mediante una `reduceByKey`, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa. |
-**CALCOLO DI (NODO; GRADO)**: al grafo diretto abbiamo applicato una funzione lambda che restituisce un oggetto in cui in chiave si trova il nodo in entrata, e in valore l'intero **1**; successivamente, mediante una `reduceByKey`, abbiamo ottenuto una lista in cui vi è in chiave il nodo, e in valore il suo grado; per semplicità, abbiamo poi convertito quest'ultimo in una stringa.
+
 **CALCOLO DI (ARCO; GRADI DEI DUE NODI)**: Abbiamo poi creato due liste differenti in cui entrambe hanno come chiave l'arco, e come valore rispettivamente il grado del nodo in entrata e il grado del nodo in uscita. Con un join, intersecando per chiave le due liste, abbiamo ottenuto una lista in cui in chiave si trova l'arco, e in valore i gradi dei relativi nodi. Sempre per comodità, abbiamo poi convertito questo oggetto in una lista di stringhe. 
 
 
