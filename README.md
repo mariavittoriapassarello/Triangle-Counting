@@ -7,11 +7,9 @@ Lo scopo di questo progetto è di formulare un algoritmo che, dato un grafo rest
 Dato un grafo indiretto G=(V,E) dove V corrisponde all'insieme dei vertici ed E all'insieme archi, una k-clique è un sottoinsieme C di V di cardinalità k tale ogni coppia u,v appartenente a C è collegata da un arco. Più formalmente, una k-clique è un insieme di vertici tale che il sottografo indotto da questi è completo, dove un sottografo indotto è un sottografo G'=(V',E') di G con V' &sube; V, E' &sube; E tale che &forall; u &isin; V', v &isin; V' per cui vale che (u,v) &isin; E allora si ha che (u,v) &isin; E'. 
 Si introduce una relazione di ordinamento tra i vertici del grafo definita come segue: u &pr; v &hArr; d(u) < d(v) oppure d(u) = d(v) e u < v, dove d(u) = |&Gamma;(u)|, dove &Gamma;(u) è l'insieme dei vertici collegati tramite un arco ad u. L'algoritmo utilizza questo ordinamento per determinare il nodo di riferimento per il conteggio di ciascuna clique.
 
-
 ## La strategia dell'algoritmo
 Otteniamo &Gamma;<sup>+</sup>(u) &forall; u &isin; U, ovvero l'insieme di tutti i v &isin; &Gamma;(u) tali che: u &pr; v, tra questi si selezionano poi gli insiemi tali per cui:  
 |&Gamma;<sup>+</sup>(u)| &ge; k-1. Ottenuto questo, attraverso passaggi logici, ricaviamo G<sup>&#43;</sup>(u), ovvero il sottografo indotto da &Gamma;<sup>&#43;</sup>(u), e poi contiamo le k-1 cliques in G<sup>+</sup>(u).
-***
 
 ## Il dataset  
 Dove trovarlo: https://snap.stanford.edu/data/loc-Gowalla.html  
