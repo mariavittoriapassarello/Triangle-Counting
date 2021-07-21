@@ -108,23 +108,14 @@ Abbiamo dunque salvato nell'oggetto `dMap2_1` tutte le coppie di nodi di Gamma +
   
 **Reduce 2**: abbiamo creato l'oggetto `dReduce2_0` utilizzando una `reduceByKey` grazie alla quale abbiamo selezionato tutte le coppie del passo precedente che avevano la stessa chiave, aggregandone i valori. Successivamente, abbiamo eseguito un `join` tra l'oggetto appena creato e il primo output di **Map 2** contenuto nell'oggetto `dMap2_0`, creando la `JavaPairRDD` `dReduce2_1`. In questo modo, abbiamo selezionato gli elementi di &Gamma;<sup>+</sup>(u) che erano collegati da un arco.
 
-JavaPairRDD<String, String> dReduce2_1 = dReduce2_0.join(dMap2_0).mapToPair(x -> new Tuple2<String, String>(x._1, x._2._1));
+
+**Map 3**: abbiamo utilizzato l'interfaccia `Map3.java` su `dReduce2_1`: per ogni nodo presente nel valore della tupla, abbiamo generato una nuova coppia avente come chiave il nodo, e come valore la chiave della tupla precedente.
 
 
-**Map 3**:
+**Reduce 3**: eseguendo una `reduceByKey` sull'output appena ottenuto, abbiamo costruito, per ogni chiave data in input, l'insieme contenente gli archi di G<sup>+<\sup>(u). Poi, utilizzando nuovamente l'interfaccia `Card.java`, abbiamo contato il numero di archi in esso contenuti. In conclusione, mediante un'ulteriore `reduceByKey` che ha sommato i valori delle tuple aggregate per chiave, abbiamo ottenuto il numero di triangoli presenti nel grafo.
+	
+	
 
-JavaPairRDD<String, String> dMap3_0 = dReduce2_1.flatMapToPair(new Map3());
-
-
-**Reduce 3**:
-
-JavaPairRDD<String, String> dReduce3_0 = dMap3_0.reduceByKey((x, y) -> x + "," + y);
-
-		JavaPairRDD<String, Integer> dReduce3_1 = dReduce3_0.mapToPair(new Card());
-
-		Integer numeroTriangoli = dReduce3_1.values().reduce((x, y) -> x + y);
-
-		System.out.println(numeroTriangoli);
 
 
 
