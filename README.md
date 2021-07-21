@@ -67,7 +67,7 @@ Una volta ottenuti i file `GowallaNodi.txt` e `GowallaArchi.txt`, li abbiamo tra
 Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'input per l'algoritmo *Clique Counting*. La prima genera l'input direttamente con *Spark*, mentre nella seconda è *Neo4j* che svolge la parte iniziale di preparazione per l'input dell'applicazione. Successivamente, una volta terminato l'algoritmo, *Neo4j* è stato usato nuovamente come strumento per validare i risultati ottenuti.
 
 1. **Preparazione dell'input con *Spark***:  
-Dopo aver caricato il file `Gowalla.txt` sull'applicazione `ContaTriangoli.java`, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {((u,v); d(u), d(v)}. 
+Dopo aver caricato il file `Gowalla.txt` sull'applicazione `ContaTriangoli.java`, inizia la parte di codice che ha lo scopo di produrre in output una lista in cui in ogni riga si trova il generico elemento {u, v, d(u), d(v)}. 
 Per fare ciò, abbiamo eseguito i seguenti passaggi:
 
 | Passaggio        | Descrizione           |
@@ -77,14 +77,34 @@ Per fare ciò, abbiamo eseguito i seguenti passaggi:
 
 
 2. **Preparazione dell'input con *Neo4j***:
-Dopo aver creato il grafo su *Neo4j*, abbiamo eseguito i seguenti passagi:
+Dopo aver creato il grafo su *Neo4j*, abbiamo eseguito i seguenti passaggi: 
 
 | Passaggio        | Descrizione           |
 |:---------- |:------------- |
 | `Calcolo di:(NODO;GRADO)` | Abbiamo eseguito una query per assegnare come attributo ad ogni nodo del grafo il relativo grado. Questa operazione è stata ottimizzata utilizzando il comando `node.degree()` della libreria `apoc`. | 
-| `Calcolo di:(ARCO;GRADI)` | Per esportare la lista in cui il generico elemento è del tipo {(u,v); d(u), d(v)}, abbiamo dato come argomento del comando `export.csv.query()` della libreria `apoc` la query che permette di ottenere questo oggetto. Il file `ArcoGradi.csv` risultante sarà l'input del codice contenuto nel file `ContaTriangoli_NeoSpark.java`(per permetterne il caricamento su *GitHub* è stato suddiviso nei due file `ArcoGradi_pt1.txt` e `ArcoGradi_pt2.txt`).|
+| `Calcolo di:(ARCO,GRADI)` | Per esportare la lista in cui il generico elemento è del tipo {u, v, d(u), d(v)}, abbiamo dato come argomento del comando `export.csv.query()` della libreria `apoc` la query che permette di ottenere questo oggetto. Il file `ArcoGradi.csv` risultante sarà l'input del codice contenuto nel file `ContaTriangoli_NeoSpark.java`(per permetterne il caricamento su *GitHub* è stato suddiviso nei due file `ArcoGradi_pt1.txt` e `ArcoGradi_pt2.txt`).|
 
 
 ## Implementazione dell'algoritmo con *Java* e *Spark*
-L'algoritmo, sia da un punto di vista operativo, sia da un punto di vista concettuale, è diviso in tre round. 
+L'algoritmo è diviso in tre round MapReduce:
+
+**Round 1:**
+
+**Map1:** data in input la lista di stringhe contenente ogni arco con accanto i gradi dei relativi nodi, con un'operazione di `filter` abbiamo selezionato gli archi che hanno grado del nodo in entrata strettamente minore del grado del nodo in uscita e abbiamo salvato questo oggetto nella `JavaRDD` di stringhe `dMap1_0`.
+Successivamente, con una seconda operazione di `filter`, abbiamo selezionato gli archi che hanno grado del nodo in entrata uguale al grado del nodo in uscita e abbiamo eseguito un ulteriore `filter` che seleziona, di questi, solamente quelli che possiedono etichetta numerica del nodo in entrata inferiore a quella del nodo in uscita; abbiamo poi salvato questo oggetto nella `JavaRDD` di stringhe `dMap1_1`. Infine, abbiamo unito i due oggetti per ottenere tutti gli archi (u,v) tali che u &pr; v. Con lo scopo di ottenere &Gamma;<sup>+</sup>(u), abbiamo eseguito una `reduceByKey` sull'output precedente.
+
+
+**Reduce 1**:
+
+
+
+
+
+
+
+
+
+
+
+
 
