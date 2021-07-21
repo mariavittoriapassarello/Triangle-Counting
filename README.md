@@ -25,7 +25,7 @@ JavaRDD<String> gowalla = jsc.textFile("data/Gowalla_edges.txt");
 gowalla = gowalla.map(x->new String(x.split("	")[0]+ "," + x.split("	")[1]));
 gowalla.saveAsTextFile("Gowalla");
 ```
-Per la creazione del grafo su Neo4j si richiede un file contenente la lista dei nodi del grafo. Per ottenerla, utilizziamo il seguente codice:
+Per la creazione del grafo su *Neo4J* si richiede un file contenente la lista dei nodi del grafo. Per ottenerla, utilizziamo il seguente codice:
 
 ```
 JavaRDD<String> dGrafo = jsc.textFile("data/Gowalla.txt");	
@@ -45,7 +45,7 @@ List<String> Grafo = new ArrayList<String>();
 JavaRDD<String> dGrafo1 = jsc.parallelize(Grafo);
 dGrafo1.saveAsTextFile("GowallaArchi");
 ```
-Una volta ottenuti i file   `GowallaNodi.txt` e `GowallaArchi.txt`, li abbiamo trasformati in file `.csv` e utilizzando la libreria `apoc` di *Neo4j* li abbiamo caricati sul software.
+Una volta ottenuti i file `GowallaNodi.txt` e `GowallaArchi.txt`, li abbiamo trasformati in file `.csv` e utilizzando la libreria `apoc` di *Neo4j* li abbiamo caricati sul software.
 
 ## Due strade alternative 
 
