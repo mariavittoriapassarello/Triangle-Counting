@@ -47,7 +47,7 @@ dGrafo1.saveAsTextFile("GowallaArchi");
 ```
 Una volta ottenuti i file *GowallaNodi.txt* e *GowallaArchi.txt*, li abbiamo trasformati in file *.csv* e utilizzando la libreria *apoc* di Neo4j li abbiamo caricati sul software.
 
-##Due strade alternative 
+## Due strade alternative 
 
 Abbiamo scelto di seguire due strategie che forniscono in maniera diversa l'input per l'algoritmo Clique Counting. La prima genera l'input direttamente con Spark, mentre nella seconda è Neo4j che svolge la parte iniziale di preparazione per l'input dell'applicazione. Successivamente, una volta terminata l'applicazione Spark, Neo4j è stato usato nuovamente come strumento per validare i risultati ottenuti.
 
